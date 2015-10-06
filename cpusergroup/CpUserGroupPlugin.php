@@ -4,11 +4,30 @@ namespace Craft;
 class CpUserGroupPlugin extends BasePlugin
 {
 
+	private $_bodyClasses = array();
+
 	public function init()
 	{
 		parent::init();
+
+		// If control panel page
 		if (craft()->request->isCpRequest()) {
-			$this->_addBodyClass();
+
+			// Set classes for logged-in user
+			$this->_setUserGroupClasses();
+
+			// Set classes of profile being viewed (if applicable)
+			$this->_setProfileClasses();
+		}
+
+		// If any body classes have been set
+		if (!empty($this->_bodyClasses)) {
+
+			// Apply to template variables
+			craft()->urlManager->setRouteVariables(array(
+				'bodyClass' => implode(' ', $this->_bodyClasses)
+			));
+
 		}
 	}
 
@@ -19,7 +38,7 @@ class CpUserGroupPlugin extends BasePlugin
 
 	public function getVersion()
 	{
-		return '0.9.9';
+		return '1.0.0';
 	}
 
 	public function getDeveloper()
@@ -33,21 +52,43 @@ class CpUserGroupPlugin extends BasePlugin
 		//return 'http://doublesecretagency.com';
 	}
 
-	private function _addBodyClass()
+	// ======================================================================== //
+
+	private function _setClasses($user, $prefix)
+	{
+		// Get their user groups
+		foreach ($user->getGroups() as $group) {
+			$this->_bodyClasses[] = $prefix.'-'.$group->handle;
+		}
+	}
+
+	private function _setUserGroupClasses()
 	{
 		// Get current user
 		$user = craft()->userSession->getUser();
+
 		// If user is logged in
 		if ($user) {
-			// Get their user groups
-			$usergroups = array();
-			foreach ($user->getGroups() as $group) {
-				$usergroups[] = 'usergroup-'.$group->handle;
+			$this->_setClasses($user, 'usergroup');
+		}
+	}
+
+	private function _setProfileClasses()
+	{
+		// Get URL segments
+		$page   = craft()->request->getSegment(1);
+		$userId = craft()->request->getSegment(2);
+
+		// If currently viewing a profile
+		if (('users' == $page) && is_numeric($userId)) {
+
+			// Get user in profile
+			$user = craft()->users->getUserById($userId);
+
+			// If profile user is valid
+			if ($user) {
+				$this->_setClasses($user, 'profile');
 			}
-			// Set body class from user groups
-			craft()->urlManager->setRouteVariables(array(
-				'bodyClass' => implode(' ', $usergroups)
-			));
 		}
 	}
 	
