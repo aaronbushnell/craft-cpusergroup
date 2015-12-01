@@ -36,9 +36,24 @@ class CpUserGroupPlugin extends BasePlugin
 		return Craft::t('Control Panel User Group');
 	}
 
+	public function getDescription()
+	{
+		return 'Adds user group classes to the Control Panel\'s <body> tag.';
+	}
+
+	public function getDocumentationUrl()
+	{
+		return 'https://github.com/lindseydiloreto/craft-cpusergroup';
+	}
+
 	public function getVersion()
 	{
-		return '1.0.0';
+		return '1.1.0';
+	}
+
+	public function getSchemaVersion()
+	{
+		return '1.1.0';
 	}
 
 	public function getDeveloper()
@@ -91,5 +106,5 @@ class CpUserGroupPlugin extends BasePlugin
 			}
 		}
 	}
-	
+
 }
