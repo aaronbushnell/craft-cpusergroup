@@ -75,6 +75,11 @@ class CpUserGroupPlugin extends BasePlugin
 		foreach ($user->getGroups() as $group) {
 			$this->_bodyClasses[] = $prefix.'-'.$group->handle;
 		}
+
+		// Identify users that are admins
+		if ($user['admin']) {
+			$this->_bodyClasses[] = $prefix.'-'."admin";
+		}
 	}
 
 	private function _setUserGroupClasses()
